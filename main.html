@@ -110,8 +110,8 @@
   <!-- Overlay de acceso denegado -->
   <div id="access-denied-overlay" class="access-denied-overlay" style="display: none;">
     <h1>ACCESO DENEGADO</h1>
-    <p>No estás autorizado para acceder a este recurso, es de pago. Por lo tanto tu dirección IP no está en la whitelist.</p>
-    <p>Si crees que esto es un error, por favor contacta mediante nuestro servidor de Discord.</p>
+    <p>No estás autorizado para acceder a este recurso, es privado. Por lo tanto tu dirección IP no está en la whitelist.</p>
+    <p>Si crees que esto es un error, por favor contacta mediante nuestro servidor de Discord. [https://discord.gg/erV2MnJNza]</p>
     <div class="ip-info">Tu dirección IP: <span id="client-ip">...</span></div>
   </div>
 
@@ -412,83 +412,57 @@ function showAccessDenied() {
   }
   document.getElementById('original-content').style.display = 'none';
 }
+
+
+const WHITELIST_WORKER_URL = 'https://fastradio-lssd.sergioramonlopezmadrid.workers.dev/';
+
 async function loadWhitelist() {
   try {
-    // URL de tu Worker Cloudflare
-    const workerUrl = 'https://fastradio-lssd.sergioramonlopezmadrid.workers.dev/';
-    
-    // Agregar timestamp para evitar caché
-    const timestamp = Date.now();
-    const response = await fetch(`${workerUrl}?v=${timestamp}`, {
-      cache: 'no-store',
+    // Intento principal con el Worker
+    const response = await fetch(WHITELIST_WORKER_URL, {
+      cache: 'no-cache',
+      credentials: 'omit',
       headers: {
-        'Content-Type': 'application/json'
+        'Accept': 'application/json'
       }
     });
 
     if (!response.ok) {
-      throw new Error(`Error del Worker: ${response.status}`);
+      throw new Error(`Worker responded with ${response.status}`);
     }
 
     const data = await response.json();
     
-    // Validación estricta de la respuesta
-    if (!data || !Array.isArray(data.allowed_ips)) {
-      throw new Error("Formato de respuesta inválido del Worker");
+    // Validación estricta
+    if (!Array.isArray(data.allowed_ips)) {
+      throw new Error('Formato de whitelist inválido');
     }
 
-    console.log("Whitelist cargada correctamente:", data.allowed_ips);
     return data.allowed_ips;
-    
   } catch (error) {
     console.error("Error cargando whitelist:", error);
-    
-    // Notificación opcional a Discord/Email
-    sendAlertToAdmin(`Error whitelist: ${error.message}`);
-    
-    return []; // Retorna array vacío para denegar acceso por defecto
+    // Fallback local
+    return ["TU_IP_PERSONAL"]; // Reemplaza con IPs de respaldo
   }
 }
 
-async function checkAccess() {
-  // Elementos UI
-  const accessDeniedEl = document.getElementById('access-denied-overlay');
-  const contentEl = document.getElementById('original-content');
-  
+// Función mejorada para verificación
+async function verifyAccess() {
   try {
-    // Obtener IP del cliente y whitelist en paralelo
-    const [clientIp, allowedIps] = await Promise.all([
-      getClientIp(),
-      loadWhitelist()
+    const [allowedIps, clientIp] = await Promise.all([
+      loadWhitelist(),
+      fetch('https://api.ipify.org?format=json')
+        .then(r => r.json())
+        .then(data => data.ip)
+        .catch(() => null)
     ]);
 
-    console.log(`Verificando IP ${clientIp} contra whitelist:`, allowedIps);
+    if (!clientIp) throw new Error("No se pudo obtener la IP");
+    if (!allowedIps.includes(clientIp)) throw new Error("IP no autorizada");
 
-    // Validaciones
-    if (!allowedIps || allowedIps.length === 0) {
-      throw new Error("La whitelist está vacía");
-    }
-
-    if (!clientIp) {
-      throw new Error("No se pudo obtener la IP del cliente");
-    }
-
-    // Verificar acceso
-    const hasAccess = allowedIps.includes(clientIp);
-    
-    if (!hasAccess) {
-      console.warn(`Acceso denegado para IP: ${clientIp}`);
-      document.getElementById('client-ip').textContent = clientIp;
-      showAccessDenied();
-      return false;
-    }
-
-    console.log("Acceso permitido");
     return true;
-    
   } catch (error) {
-    console.error("Error en verificación de acceso:", error);
-    showAccessDenied();
+    console.error("Error de acceso:", error);
     return false;
   }
 }
