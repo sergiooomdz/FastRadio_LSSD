@@ -1,25 +1,27 @@
 {
   "INICIO Y FIN DE TURNO": [
-    "INICIO DE SERVICIO Y SALIDA DE SERVICIO:\n!XXXX, SCC, 10-8.\n!XXXX, SCC, 10-7."
+    "INICIO DE SERVICIO\n!XXXX, SCC, 10-8.",
+    "SALIDA DE SERVICIO:\n!XXXX, SCC, 10-7."
   ],
   "MÉDICA": [
-    "1º SOLICITUD MÉDICA:\n!XXXX, SCC, gestióname una 902R en mi ubicación, [UBICACIÓN] por [MOTIVOS].",
+    "1º SOLICITUD MÉDICA:\n!XXXX, SCC, gestióname una 902R en [UBICACIÓN] por [MOTIVOS].",
     "2º DISPATCH LSES:\n#Sheriff's Communications Center, LSES, deputies requieren unidad medica urgentemente por persona herida, se gestiona ubicación via interno.", 
     "3º CANCELAR DISPATCH LSES:\n#Sheriff's Communications Center, LSES, desestimen la ultima solicitud, unidades medicas locales acudieron al lugar."
   ],
   "RADIO": [
-    "USO DE RADIO:\n!XXXX, SCC, márcame en código seis sobre [TUS LABORES].",
+    "CÓDIGO SEIS:\n!XXXX, SCC, márcame en código seis sobre [TUS LABORES].",
+    "CÓDIGO SIETE:\n!XXXX, SCC, márcame en código siete, parada para comer y descanso.",
     "TRASLADO SOSPECHOSO:\n!XXXX, SCC, 10-15 con sospechoso hacia la estación [11 SANDY/26 PALETO].",
     "EMBARGO VEHÍCULO:\n!XXXX, SCC, necesitamos una 926 en [UBICACIÓN] para incautar un vehículo de un sospechoso."
   ],
   "TÁCTICOS": [
     "TÁCTICOS:\n!XXXX, SCC, márcame en ruta, código tres hacia A-TAC 1.",
-    "GESTIÓN CÓDIGO CUATRO:\n!XXXX, SCC, gestióname el código cuatro sobre la situación de A-TAC 1.",
+    "CÓDIGO CUATRO:\n!XXXX, SCC, gestióname el código cuatro sobre la situación de A-TAC 1.",
     "COORDINACIÓN TÁCTICA:\n!XXXX, SCC, enlázame todas las unidades de A-TAC 1 hacia el canal L-TAC 11."
   ],
   "PARCHE": [
-    "PARCHE:\n!XXXX, SCC, 10-34 para un informe de crimen, dame el parche.",
-    "UBICACIÓN SOSPECHOSA:\n!XXXX, SCC, se busca (vehículo -persona) (color++vestimenta) tras [SITUACIÓN], última vez visto en [UBICACIÓN]."
+    "PEDIR PARCHE:\n!XXXX, SCC, 10-34 para un informe de crimen, dame el parche.",
+    "UBICACIÓN SOSPECHOSA:\n!XXXX, SCC, se busca (vehículo -persona) (color++vestimenta) tras [SITUACIÓN], última vez visto en [UBICACIÓN], suelto el parche."
   ],
   "FEDERALES": [
     "1º GESTIÓN SCC:\n!XXXX, SCC, gestióname a los agentes federales para imputación de cargos en mi ubicación.",
