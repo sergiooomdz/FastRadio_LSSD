@@ -392,39 +392,56 @@
 const GIST_ID = '24a0fae58b0e4c1eb58d3863d3f27836'; 
 const GIST_FILENAME = 'whitelist.json';
 const GITHUB_TOKEN = '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';
-// Versión corregida de loadWhitelist()
+// Definir función showAccessDenied (si no existe)
+function showAccessDenied() {
+  const overlay = document.getElementById('access-denied-overlay');
+  if (overlay) {
+    overlay.style.display = 'flex';
+  }
+  document.getElementById('original-content').style.display = 'none';
+}
+// Función loadWhitelist actualizada
 async function loadWhitelist() {
   try {
-    const response = await fetch('https://fastradio-lssd.sergioramonlopezmadrid.workers.dev/');
-    
+    const response = await fetch('https://fastradio-issd.sergioramonlopezmadrid.workers.dev/', {
+      cache: 'no-store'
+    });
+
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
     }
-    
+
     const data = await response.json();
     
-    // Validación de datos
-    if (!data || !Array.isArray(data.allowed_ips)) {
+    if (!Array.isArray(data.allowed_ips)) {
       throw new Error("Formato de respuesta inválido");
     }
-    
+
     return data.allowed_ips;
   } catch (error) {
     console.error("Error cargando whitelist:", error.message);
-    return []; // Retorna array vacío para denegar acceso por defecto
+    return [];
   }
 }
 
-// Cómo usarla correctamente:
+// Función checkAccess mejorada
 async function checkAccess() {
-  const allowedIps = await loadWhitelist(); // Esto debe estar dentro de una función async
-  const clientIp = await getClientIp(); // Asumiendo que tienes esta función
-  
-  if (!allowedIps.includes(clientIp)) {
-    showAccessDenied();
+  try {
+    const [allowedIps, clientIp] = await Promise.all([
+      loadWhitelist(),
+      fetch('https://api.ipify.org?format=json').then(res => res.json()).then(data => data.ip)
+    ]);
+
+    if (!allowedIps || allowedIps.length === 0) {
+      console.error("Whitelist vacía");
+      return false;
+    }
+
+    return allowedIps.includes(clientIp);
+  } catch (error) {
+    console.error("Error en verificación:", error);
     return false;
   }
-  return true;
 }
 
 // Función auxiliar para obtener IP
