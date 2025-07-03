@@ -64,6 +64,10 @@
 <body class="dark-mode">
   <div class="beta-overlay">
   <p>FASE BETA</p>
+  <!-- Notificación de restricción -->
+<div id="restricted-notification" class="restricted-notification">
+  ⚠️ El uso no autorizado de este contenido está prohibido. (Click derecho bloqueado)
+</div>
 </div>
   <!-- Menú Hamburguesa -->
   <div id="menuToggle">
@@ -344,9 +348,41 @@
 </div>
 
   <div class="realtime-clock" id="clock">HORA GTAHUB: --:--:--</div>
-
-
   <script>
+    // Bloquear clic derecho y mostrar notificación
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+      showRestrictionNotification("⚠️ El uso no autorizado de este contenido está prohibido (Click derecho bloqueado)");
+    });
+
+    // Opcional: bloquear algunas combinaciones de teclas comunes para abrir DevTools
+    document.addEventListener('keydown', function (e) {
+      // F12, Ctrl+Shift+I, etc.
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.shiftKey && e.key === "C") ||
+        (e.ctrlKey && e.shiftKey && e.key === "J") ||
+        (e.keyCode === 123) // F12
+      ) {
+        e.preventDefault();
+        showRestrictionNotification("🚫 Acceso restringido a herramientas de desarrollo (F12, Ctrl+Shift+I, etc)");
+        return false;
+      }
+    });
+
+    // Función para mostrar notificación
+    function showRestrictionNotification(message) {
+      const notification = document.getElementById('restricted-notification');
+      if (!notification) return;
+
+      notification.textContent = message;
+      notification.classList.add('show');
+
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 2500);
+    }
     const elements = {
       callsign: document.getElementById('callsign'),
       messages: document.getElementById('messages'),

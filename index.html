@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
-    /* === Fondo oscuro base === */
+    /* Fondo oscuro base */
     body {
       margin: 0;
       padding: 0;
@@ -25,7 +25,7 @@
       position: relative;
     }
 
-    /* Overlay negro semitransparente para mejorar legibilidad */
+    /* Overlay negro semitransparente */
     body::before {
       content: "";
       position: fixed;
@@ -37,7 +37,7 @@
       z-index: -1;
     }
 
-    /* === Contenedor centrado === */
+    /* Contenedor centrado */
     .welcome-container {
       display: flex;
       flex-direction: column;
@@ -85,7 +85,7 @@
       box-shadow: 0 6px 16px rgba(59, 130, 246, 0.6);
     }
 
-    /* === Control de volumen y mute === */
+    /* Controles de volumen */
     .audio-controls {
       margin-top: 1rem;
       display: flex;
@@ -119,7 +119,7 @@
       cursor: pointer;
     }
 
-    /* === Mensaje de redirección === */
+    /* Mensaje de redirección */
     .auto-redirect {
       margin-top: 1rem;
       font-size: 0.9rem;
@@ -127,7 +127,7 @@
       opacity: 0.9;
     }
 
-    /* === Footer fijo === */
+    /* Footer fijo */
     footer {
       position: fixed;
       bottom: 0;
@@ -139,18 +139,47 @@
       background-color: transparent;
       padding: 0.75rem 1.5rem;
     }
+
+    /* Notificación restringida */
+    .restricted-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(30, 30, 30, 0.95);
+      color: #f87171;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1rem;
+      z-index: 99999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .restricted-notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 <body class="dark-mode">
+
   <!-- Reproductor de audio invisible -->
   <audio id="background-music" src="sound_main.mp3" preload="auto" loop></audio>
+
+  <!-- Notificación de restricción -->
+  <div id="restricted-notification" class="restricted-notification">
+    ⚠️ El uso no autorizado de este contenido está prohibido.
+  </div>
 
   <!-- Contenido principal -->
   <main class="welcome-container" id="page-content">
     <h1 class="welcome-title">BIENVENID@ A FAST-RADIO VERSIÓN "LSSD"</h1>
     <p class="welcome-text">
-    ¡Deputy! Esta herramienta está diseñada para agilizar tu comunicación por radio.
-    Usa mensajes estandarizados mientras estás en servicio activo.
+      ¡Deputy! Esta herramienta está diseñada para agilizar tu comunicación por radio.
+      Usa mensajes estandarizados mientras estás en servicio activo.
     </p>
     <a href="main.html" class="btn-enter" id="redirectBtn">👉 Ir a la herramienta</a>
     <div class="auto-redirect" id="countdown">⏳ Redirigiendo automáticamente en 60 segundos...</div>
@@ -168,33 +197,63 @@
   </footer>
 
   <script>
+    // Bloquear clic derecho y mostrar notificación
+    document.addEventListener("contextmenu", function (e) {
+      e.preventDefault();
+      showRestrictionNotification("⚠️ El uso no autorizado de este contenido está prohibido (Click derecho bloqueado)");
+    });
+
+    // Bloquear DevTools (F12, Ctrl+Shift+I, etc.)
+    document.addEventListener("keydown", function (e) {
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.shiftKey && e.key === "C") ||
+        (e.ctrlKey && e.shiftKey && e.key === "J") ||
+        e.keyCode === 123
+      ) {
+        e.preventDefault();
+        showRestrictionNotification("🚫 Acceso restringido a herramientas de desarrollo");
+      }
+    });
+
+    // Mostrar notificación
+    function showRestrictionNotification(message) {
+      const notification = document.getElementById("restricted-notification");
+      if (!notification) return;
+
+      notification.textContent = message;
+      notification.classList.add("show");
+
+      setTimeout(() => {
+        notification.classList.remove("show");
+      }, 2500);
+    }
+
+    // Configuración de música
     const music = document.getElementById("background-music");
     const volumeControl = document.getElementById("volumeControl");
     const volumeIcon = document.getElementById("volumeIcon");
     const countdownEl = document.getElementById("countdown");
 
-    // === Iconos dinámicos según volumen ===
     function updateVolumeIcon(volume) {
       if (volume <= 0) {
-        volumeIcon.textContent = "🔇"; // Silencio
+        volumeIcon.textContent = "🔇";
       } else if (volume < 0.5) {
-        volumeIcon.textContent = "🔈"; // Bajo
+        volumeIcon.textContent = "🔈";
       } else {
-        volumeIcon.textContent = "🔊"; // Alto
+        volumeIcon.textContent = "🔊";
       }
     }
 
-    // === Configurar volumen inicial ===
     window.addEventListener("load", () => {
-      // Iniciar música al cargar página
       music.volume = 0.1;
       volumeControl.value = music.volume;
 
-      // Para algunos navegadores que bloquean reproducción automática
       const playPromise = music.play();
       if (playPromise !== undefined) {
         playPromise.catch(err => {
-          console.log("Reproducción automática bloqueada. Pausa.", err);
+          console.log("Reproducción automática bloqueada.", err);
           document.body.addEventListener("click", () => {
             music.play().catch(e => console.log("No se pudo reproducir:", e));
           }, { once: true });
@@ -203,7 +262,6 @@
 
       updateVolumeIcon(music.volume);
 
-      // Iniciar cuenta regresiva
       let timeLeft = 60;
       const interval = setInterval(() => {
         timeLeft--;
@@ -216,7 +274,7 @@
       }, 1000);
     });
 
-    // === Botón de mute/unmute ===
+    // Control de mute/unmute
     volumeIcon.addEventListener("click", () => {
       if (music.muted) {
         music.muted = false;
@@ -228,7 +286,7 @@
       }
     });
 
-    // === Control de volumen manual ===
+    // Cambiar volumen manualmente
     volumeControl.addEventListener("input", (e) => {
       const vol = parseFloat(e.target.value);
       music.volume = vol;
@@ -236,9 +294,9 @@
       updateVolumeIcon(vol);
     });
 
-    // === Efecto ripple opcional en botón ===
+    // Efecto ripple opcional en botón
     const redirectBtn = document.getElementById("redirectBtn");
-    redirectBtn.addEventListener("click", function(e) {
+    redirectBtn.addEventListener("click", function (e) {
       e.preventDefault();
       window.location.href = this.getAttribute("href");
     });
