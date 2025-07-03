@@ -385,61 +385,80 @@
         <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
       </div>
     </div>
-
     <div class="realtime-clock" id="clock">HORA GTAHUB: --:--:--</div>
   </div>
-
   <script>
 // Configuración
-const GIST_ID = '24a0fae58b0e4c1eb58d3863d3f27836'; // Reemplaza con tu ID real
+const GIST_ID = '24a0fae58b0e4c1eb58d3863d3f27836'; 
 const GIST_FILENAME = 'whitelist.json';
 const GITHUB_TOKEN = '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';
-
+// Versión corregida de loadWhitelist()
 async function loadWhitelist() {
   try {
-    const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json'
-      },
-      cache: 'no-store' // Evita caché
-    });
-
+    const response = await fetch('https://fastradio-lssd.sergioramonlopezmadrid.workers.dev/');
+    
     if (!response.ok) {
-      // Manejo específico de errores HTTP
-      if (response.status === 403) {
-        throw new Error("Límite de tasa excedido o token inválido");
-      }
-      if (response.status === 404) {
-        throw new Error("Gist no encontrado - verifica el ID");
-      }
       throw new Error(`Error HTTP: ${response.status}`);
     }
-
-    const gistData = await response.json();
     
-    // Verifica que el archivo existe en el gist
-    if (!gistData.files || !gistData.files[GIST_FILENAME]) {
-      throw new Error("Archivo whitelist.json no encontrado en el gist");
+    const data = await response.json();
+    
+    // Validación de datos
+    if (!data || !Array.isArray(data.allowed_ips)) {
+      throw new Error("Formato de respuesta inválido");
     }
-
-    const content = gistData.files[GIST_FILENAME].content;
-    const parsedData = JSON.parse(content);
     
-    // Validación de la estructura
-    if (!Array.isArray(parsedData.allowed_ips)) {
-      throw new Error("Formato inválido - allowed_ips debe ser un array");
-    }
-
-    return parsedData.allowed_ips;
-    
+    return data.allowed_ips;
   } catch (error) {
     console.error("Error cargando whitelist:", error.message);
-    
-    // Notificación opcional al administrador
-    sendAdminNotification(`Error whitelist: ${error.message}`);
-    
     return []; // Retorna array vacío para denegar acceso por defecto
+  }
+}
+
+// Cómo usarla correctamente:
+async function checkAccess() {
+  const allowedIps = await loadWhitelist(); // Esto debe estar dentro de una función async
+  const clientIp = await getClientIp(); // Asumiendo que tienes esta función
+  
+  if (!allowedIps.includes(clientIp)) {
+    showAccessDenied();
+    return false;
+  }
+  return true;
+}
+
+// Función auxiliar para obtener IP
+async function getClientIp() {
+  try {
+    const response = await fetch('https://api.ipify.org?format=json');
+    return (await response.json()).ip;
+  } catch {
+    return null;
+  }
+}
+
+// Ejemplo de inicialización correcta
+window.addEventListener('load', async () => { // <-- ¡Función async aquí!
+  const hasAccess = await checkAccess();
+  
+  if (hasAccess) {
+    initApplication(); // Tu función de inicialización
+  } else {
+    document.getElementById('access-denied-overlay').style.display = 'flex';
+  }
+});
+
+// Función opcional para notificaciones
+async function sendAlertToDiscord(message) {
+  const webhookUrl = 'https://discord.com/api/webhooks/1390330120601862166/Vo1oXYzQKejJ3uEyUBcTw38B3_JQlL4qCrGsv8831XYSBKjyGIGgZOq6R0o8SVkqOgXoasync';
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: message })
+    });
+  } catch (e) {
+    console.error("Error enviando alerta:", e);
   }
 }
 
