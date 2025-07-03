@@ -497,7 +497,27 @@ window.addEventListener('load', async () => {
     document.getElementById('loading-indicator').style.display = 'none';
   }
 });
+// Función de verificación mejorada
+async function checkAccess() {
+  try {
+    const [whitelist, ipResponse] = await Promise.all([
+      loadWhitelist(),
+      fetch('https://api.ipify.org?format=json')
+    ]);
 
+    const clientIp = await ipResponse.json().then(data => data.ip);
+    const allowedIps = whitelist.allowed_ips || [];
+
+    if (!allowedIps.includes(clientIp)) {
+      throw new Error(`IP ${clientIp} no está autorizada`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error en checkAccess:", error);
+    return false;
+  }
+}
 // Función opcional para notificaciones
 async function sendAlertToDiscord(message) {
   const webhookUrl = 'https://discord.com/api/webhooks/1390330120601862166/Vo1oXYzQKejJ3uEyUBcTw38B3_JQlL4qCrGsv8831XYSBKjyGIGgZOq6R0o8SVkqOgXoasync';
@@ -922,7 +942,17 @@ async function sendToDiscord(payload) {
 
       document.querySelectorAll('[data-scroll]').forEach(el => observer.observe(el));
     }
-
+// Inicialización robusta
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const hasAccess = await checkAccess();
+    document.getElementById(hasAccess ? 'content' : 'access-denied')
+            .style.display = 'block';
+  } catch (error) {
+    console.error("Error inicial:", error);
+    document.getElementById('access-denied').style.display = 'block';
+  }
+});
     // Inicialización modificada para verificar IP primero
     window.addEventListener('load', async () => {
       // Verificar acceso por IP
