@@ -390,43 +390,85 @@
   </div>
 
   <script>
-    // 1. PRIMERO VERIFICAMOS LA WHITELIST DE IPs
-    const WHITELISTED_IPS = [
-      // Agrega aquí las IPs autorizadas (reemplaza con las IPs reales)
-      "89.44.60.199", // Sergioo
-      "103.229.170.32"      // Daninu
-    ];
+// Configuración
+const GIST_ID = '24a0fae58b0e4c1eb58d3863d3f27836'; // Reemplaza con tu ID real
+const GIST_FILENAME = 'whitelist.json';
+const GITHUB_TOKEN = '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';
 
-    // Función para verificar el acceso por IP
-    async function checkIPAccess() {
-      try {
-        // Obtener la IP del cliente
-        const ipResponse = await fetch('https://api.ipify.org?format=json');
-        const ipData = await ipResponse.json();
-        const clientIp = ipData.ip;
-        
-        // Mostrar la IP en el mensaje de denegado
-        document.getElementById('client-ip').textContent = clientIp;
-        
-        // Verificar si la IP está en la whitelist
-        if (!WHITELISTED_IPS.includes(clientIp)) {
-          // Mostrar mensaje de acceso denegado y ocultar contenido
-          document.getElementById('access-denied-overlay').style.display = 'flex';
-          document.getElementById('original-content').style.display = 'none';
-          return false;
-        }
-        
-        return true;
-      } catch (error) {
-        console.error("Error verificando IP:", error);
-        // En caso de error, por seguridad denegamos el acceso
-        document.getElementById('access-denied-overlay').style.display = 'flex';
-        document.getElementById('original-content').style.display = 'none';
-        return false;
+async function loadWhitelist() {
+  try {
+    const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json'
+      },
+      cache: 'no-store' // Evita caché
+    });
+
+    if (!response.ok) {
+      // Manejo específico de errores HTTP
+      if (response.status === 403) {
+        throw new Error("Límite de tasa excedido o token inválido");
       }
+      if (response.status === 404) {
+        throw new Error("Gist no encontrado - verifica el ID");
+      }
+      throw new Error(`Error HTTP: ${response.status}`);
     }
 
-    // 2. LUEGO EL RESTO DE TU CÓDIGO ORIGINAL (sin cambios)
+    const gistData = await response.json();
+    
+    // Verifica que el archivo existe en el gist
+    if (!gistData.files || !gistData.files[GIST_FILENAME]) {
+      throw new Error("Archivo whitelist.json no encontrado en el gist");
+    }
+
+    const content = gistData.files[GIST_FILENAME].content;
+    const parsedData = JSON.parse(content);
+    
+    // Validación de la estructura
+    if (!Array.isArray(parsedData.allowed_ips)) {
+      throw new Error("Formato inválido - allowed_ips debe ser un array");
+    }
+
+    return parsedData.allowed_ips;
+    
+  } catch (error) {
+    console.error("Error cargando whitelist:", error.message);
+    
+    // Notificación opcional al administrador
+    sendAdminNotification(`Error whitelist: ${error.message}`);
+    
+    return []; // Retorna array vacío para denegar acceso por defecto
+  }
+}
+
+async function checkIPAccess() {
+  try {
+    // Obtener IP del cliente
+    const ipResponse = await fetch('https://api.ipify.org?format=json');
+    const clientIp = (await ipResponse.json()).ip;
+    document.getElementById('client-ip').textContent = clientIp;
+
+    // Cargar whitelist
+    const allowedIps = await loadWhitelist();
+    if (allowedIps.length === 0) {
+      console.error("Whitelist vacía o no cargada");
+      return false;
+    }
+
+    // Verificar acceso
+    if (!allowedIps.includes(clientIp)) {
+      console.warn("IP no autorizada:", clientIp);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error en verificación:", error);
+    return false;
+  }
+}
     // Bloquear clic derecho y mostrar notificación
     document.addEventListener('contextmenu', function (e) {
       e.preventDefault();
