@@ -95,7 +95,7 @@
   <div id="access-denied-overlay" class="access-denied-overlay" style="display: none;">
     <h1>ACCESO DENEGADO</h1>
     <p>No estás autorizado para acceder a este recurso, es de pago. Por lo tanto tu dirección IP no está en la whitelist.</p>
-    <p>Si crees que esto es un error, por favor contacta mediante nuestro servidor de Discord. [https://discord.gg/erV2MnJNza]</p>
+    <p>Si crees que esto es un error, por favor contacta mediante nuestro servidor de Discord.</p>
     <div class="ip-info">Tu dirección IP: <span id="client-ip">...</span></div>
   </div>
 
@@ -390,62 +390,43 @@
   </div>
 
   <script>
-    let WHITELISTED_IPS = [];
+    // 1. PRIMERO VERIFICAMOS LA WHITELIST DE IPs
+    const WHITELISTED_IPS = [
+      // Agrega aquí las IPs autorizadas (reemplaza con las IPs reales)
+      "89.44.60.199", // Sergioo
+      "103.229.170.32"      // Daninu
+    ];
 
-    async function loadWhitelist() {
-        try {
-            // Usa una ruta relativa o absoluta que solo tú conozcas
-            const response = await fetch('/private-route/whitelist.json?v=' + Date.now(), {
-                headers: {
-                    'Cache-Control': 'no-cache'
-                }
-            });
-            
-            if (!response.ok) throw new Error("Error cargando whitelist");
-            
-            const data = await response.json();
-            return data.allowed_ips || [];
-        } catch (error) {
-            console.error("Error loading whitelist:", error);
-            // Opcional: Notificar al administrador
-            sendAlertToAdmin("Error cargando whitelist: " + error.message);
-            return [];
-        }
-    }
-
+    // Función para verificar el acceso por IP
     async function checkIPAccess() {
-        WHITELISTED_IPS = await loadWhitelist();
+      try {
+        // Obtener la IP del cliente
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        const clientIp = ipData.ip;
         
-        // Si no se pudo cargar la whitelist, denegar acceso
-        if (WHITELISTED_IPS.length === 0) {
-            showAccessDenied();
-            return false;
+        // Mostrar la IP en el mensaje de denegado
+        document.getElementById('client-ip').textContent = clientIp;
+        
+        // Verificar si la IP está en la whitelist
+        if (!WHITELISTED_IPS.includes(clientIp)) {
+          // Mostrar mensaje de acceso denegado y ocultar contenido
+          document.getElementById('access-denied-overlay').style.display = 'flex';
+          document.getElementById('original-content').style.display = 'none';
+          return false;
         }
         
-        try {
-            const ipResponse = await fetch('https://api.ipify.org?format=json');
-            const ipData = await ipResponse.json();
-            const clientIp = ipData.ip;
-            
-            document.getElementById('client-ip').textContent = clientIp;
-            
-            if (!WHITELISTED_IPS.includes(clientIp)) {
-                showAccessDenied();
-                return false;
-            }
-            
-            return true;
-        } catch (error) {
-            console.error("Error verificando IP:", error);
-            showAccessDenied();
-            return false;
-        }
-    }
-
-    function showAccessDenied() {
+        return true;
+      } catch (error) {
+        console.error("Error verificando IP:", error);
+        // En caso de error, por seguridad denegamos el acceso
         document.getElementById('access-denied-overlay').style.display = 'flex';
         document.getElementById('original-content').style.display = 'none';
+        return false;
+      }
     }
+
+    // 2. LUEGO EL RESTO DE TU CÓDIGO ORIGINAL (sin cambios)
     // Bloquear clic derecho y mostrar notificación
     document.addEventListener('contextmenu', function (e) {
       e.preventDefault();
@@ -715,10 +696,10 @@ async function sendAdvancedNotification(actionType, actionDetail) {
 
   const embed = {
     title: isCallsign 
-      ? "@here | 🚨 NUEVO CALLSIGN INGRESADO:"
+      ? "🚨 NUEVO CALLSIGN INGRESADO:"
       : isFeedback
-        ? "@here | 💡 SUGERENCIA RECIBIDA:"
-        : "@here | 📎 MENSAJE COPIADO:",
+        ? "💡 SUGERENCIA RECIBIDA:"
+        : "📎 MENSAJE COPIADO:",
     description: isCallsign || isFeedback
       ? `\`\`\`${actionDetail.slice(0, 1024)}\`\`\``
       : `\`${actionDetail}\``,
@@ -834,9 +815,8 @@ async function sendToDiscord(payload) {
     // Inicialización modificada para verificar IP primero
     window.addEventListener('load', async () => {
       // Verificar acceso por IP
-    const hasAccess = await checkIPAccess();
-    
-    if (!hasAccess) return; // Detener si no tiene acceso
+      const hasAccess = await checkIPAccess();
+      
       if (hasAccess) {
         // Solo inicializar la aplicación si tiene acceso
         // Ocultar secciones al inicio
