@@ -56,299 +56,346 @@
       opacity: 1 !important;
       transform: translateY(0) !important;
     }
+
   </style>
 </head>
-  <footer>
-    <p>© 2025 FastRadio v1.1.0 LSSD GTAHUB.GG | Creado por <strong>Sergioo</strong> | Discord: sergioomdz</p>
-  </footer>
 <body class="dark-mode">
-  <div class="beta-overlay">
-  <p>PRE-RELEASE VERSION</p>
-  <!-- Notificación de restricción -->
-<div id="restricted-notification" class="restricted-notification">
-  ⚠️ El uso no autorizado de este contenido está prohibido. (Click derecho bloqueado)
-</div>
-</div>
-  <!-- Menú Hamburguesa -->
-  <div id="menuToggle">
-    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-    </svg>
-  </div>
-  <div id="notification" class="notification"></div>
-  <div id="offline-notification" class="notification">⚠️ Estás desconectado</div>
-  <!-- Menú Lateral -->
-  <div id="sideMenu">
-    <div class="menu-item" data-section="info">ℹ️ INFORMACIÓN</div>
-    <div class="menu-item" data-section="contacto">📩 CONTACTO</div>
-    <div class="menu-item" data-section="changelog">📝 CHANGELOG</div>
-    <div class="menu-item" data-section="feedback">💬 SUGERENCIAS</div>
-    <div class="menu-item" data-section="aviso">⚖️ AVISO LEGAL</div>
+  <!-- Overlay de acceso denegado -->
+  <div id="access-denied-overlay" class="access-denied-overlay" style="display: none;">
+    <h1>ACCESO DENEGADO</h1>
+    <p>No estás autorizado para acceder a este recurso. Tu dirección IP no está en la lista blanca.</p>
+    <p>Si crees que esto es un error, por favor contacta al administrador.</p>
+    <div class="ip-info">Tu dirección IP: <span id="client-ip">...</span></div>
   </div>
 
-  <!-- Contenedor Principal -->
-  <div id="main-content">
-    <header>
-      <h1>FAST-RADIO | VERSIÓN LSSD | GTAHUB.GG</h1>
-      <div id="activeCallsign" class="active-callsign">👤 <strong>CALLSIGN ACTUAL: N/A</strong></div>
-    </header>
-
-    <main class="container">
-      <label for="callsign">ESCRIBE EL CALLSIGN QUE USARAS:</label>
-      <input type="text" id="callsign" placeholder="Ejemplo: 262 Sam (Máximo 10 caracteres)" 
-             aria-label="Callsign" autocomplete="off" oninput="validateCallsign(this.value)" data-scroll="fade-up"/>
-      <label for="search">BUSCAR MENSAJE RÁPIDO:</label>
-      <input type="text" id="search" placeholder="Buscar por palabra clave..." 
-             aria-label="Buscar mensaje rápido" autocomplete="off" oninput="filterMessages()" data-scroll="fade-up"/>
-      <div class="category-nav" id="categoryNav"></div>
-      <section id="messages"></section>
-      <div class="empty-state" id="empty-state" data-scroll="fade-up">
-        Introduce tu CALLSIGN arriba para generar los mensajes predefinidos.
+  <!-- Contenido original (todo el contenido de tu página) -->
+  <div id="original-content">
+    <div class="beta-overlay">
+      <p>PRE-RELEASE VERSION</p>
+      <!-- Notificación de restricción -->
+      <div id="restricted-notification" class="restricted-notification">
+        ⚠️ El uso no autorizado de este contenido está prohibido. (Click derecho bloqueado)
       </div>
-    </main>
+    </div>
+    <!-- Menú Hamburguesa -->
+    <div id="menuToggle">
+      <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </div>
+    <div id="notification" class="notification"></div>
+    <div id="offline-notification" class="notification">⚠️ Estás desconectado</div>
+    <!-- Menú Lateral -->
+    <div id="sideMenu">
+      <div class="menu-item" data-section="info">ℹ️ INFORMACIÓN</div>
+      <div class="menu-item" data-section="contacto">📩 CONTACTO</div>
+      <div class="menu-item" data-section="changelog">📝 CHANGELOG</div>
+      <div class="menu-item" data-section="feedback">💬 SUGERENCIAS</div>
+      <div class="menu-item" data-section="aviso">⚖️ AVISO LEGAL</div>
+    </div>
+
+    <!-- Contenedor Principal -->
+    <div id="main-content">
+      <header>
+        <h1>FAST-RADIO | VERSIÓN LSSD | GTAHUB.GG</h1>
+        <div id="activeCallsign" class="active-callsign">👤 <strong>CALLSIGN ACTUAL: N/A</strong></div>
+      </header>
+
+      <main class="container">
+        <label for="callsign">ESCRIBE EL CALLSIGN QUE USARAS:</label>
+        <input type="text" id="callsign" placeholder="Ejemplo: 262 Sam (Máximo 10 caracteres)" 
+               aria-label="Callsign" autocomplete="off" oninput="validateCallsign(this.value)" data-scroll="fade-up"/>
+        <label for="search">BUSCAR MENSAJE RÁPIDO:</label>
+        <input type="text" id="search" placeholder="Buscar por palabra clave..." 
+               aria-label="Buscar mensaje rápido" autocomplete="off" oninput="filterMessages()" data-scroll="fade-up"/>
+        <div class="category-nav" id="categoryNav"></div>
+        <section id="messages"></section>
+        <div class="empty-state" id="empty-state" data-scroll="fade-up">
+          Introduce tu CALLSIGN arriba para generar los mensajes predefinidos.
+        </div>
+      </main>
+    </div>
+
+    <!-- Secciones del Menú -->
+    <div id="sections-container">
+
+    <!-- Sección Feedback -->
+    <div id="feedback" class="section">
+      <div class="section-header">
+        <h1>💬 DEJA TU SUGERENCIA</h1>
+      </div>
+      <div class="section-content feedback-container">
+        <p>¿Tienes una idea nueva o quieres reportar un error? ¡Escríbela aquí!</p>
+        <label for="feedback-callsign"><strong>NOMBRE DE USUARIO:</strong></label>
+        <input type="text" id="feedback-callsign" placeholder="Ejemplo: Sergio" maxlength="35" oninput="validateCallsignInput(this.value)" />
+
+        <label for="feedback-text"><strong>MENSAJE:</strong></label>
+        <textarea id="feedback-text" rows="6" placeholder="Escribe tu sugerencia o reporte..."></textarea>
+
+        <button onclick="submitFeedback()" class="back-btn">📤 Enviar sugerencia</button>
+      </div>
+      <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
+    </div>
+
+    <!-- Sección Información -->
+    <div id="info" class="section">
+      <div class="section-header">
+        <h1>INFORMACIÓN</h1>
+      </div>
+      <div class="section-content info-container">
+        <div class="info-card">
+          <h2>¿Qué es FAST-RADIO LSSD?:</h2>
+          <p>FAST-RADIO es una herramienta diseñada para agilizar las comunicaciones escritas de LEO dentro de GTAHUB.GG, en este caso concreto de LSSD.</p>
+
+          <h3>🎯 Objetivo:</h3>
+          <p>Permitir a los jugadores enviar mensajes rápidos y estandarizados mediante el uso de plantillas predefinidas, acelerando la comunicación durante situaciones críticas o rutinarias.</p>
+
+          <h3>⚙️ Funcionalidades principales:</h3>
+          <ul class="features-list">
+            <li><i class="fas fa-check-circle"></i> Personalización con tu <strong>CALLSIGN</strong></li>
+            <li><i class="fas fa-check-circle"></i> Mensajes organizados por categorías</li>
+            <li><i class="fas fa-check-circle"></i> Búsqueda rápida por palabras clave</li>
+            <li><i class="fas fa-check-circle"></i> Copiado automático al portapapeles</li>
+            <li><i class="fas fa-check-circle"></i> Hora HUB actualizada en tiempo real (UTC+2)</li>
+          </ul>
+
+          <h3>💡 ¿Cómo usarla?:</h3>
+          <ol class="usage-steps">
+            <li>Escribe tu CALLSIGN arriba.</li>
+            <li>Usa la barra de búsqueda o navega por categorías.</li>
+            <li>Haz clic en el botón "Copiar" para pegar directamente en Discord o el chat del juego.</li>
+          </ol>
+        </div>
+
+        <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
+      </div>
+    </div>
+
+    <!-- Sección Contacto -->
+    <div id="contacto" class="section">
+      <div class="section-header">
+        <h1>CONTACTO</h1>
+      </div>
+      <div class="section-content contact-container">
+        <div class="contact-card">
+          <h2>¿Tienes dudas o sugerencias?</h2>
+          <p>Estoy aquí para ayudarte. Puedes contactarme por cualquiera de los siguientes medios:</p>
+
+          <ul class="contact-list">
+            <li><i class="fab fa-discord"></i> <strong>Discord:</strong> <a href="https://discordapp.com/users/sergioomdz " target="_blank">sergioomdz</a></li>
+            <li><i class="fas fa-envelope"></i> <strong>Email:</strong> <a href="mailto:sergioomdz@gmail.com" target="_blank">sergioomdz@gmail.com</a></li>
+            <li><i class="fab fa-github"></i> <strong>GitHub:</strong> <a href="https://github.com/sergioomdz " target="_blank">Ver mis proyectos</a></li>
+            <li><i class="fas fa-briefcase"></i> <strong>Freelance:</strong> Disponible para nuevos proyectos</li>
+          </ul>
+
+          <p class="thank-you-text"><strong>Gracias por usar fast radio ❤️</strong></p>
+        </div>
+
+        <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
+      </div>
+    </div>
+
+    <!-- Sección Changelog -->
+    <div id="changelog" class="section">
+      <div class="section-header">
+        <h1>HISTORIAL DE CAMBIOS</h1>
+      </div>
+      <div class="section-content changelog-container">
+
+       
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v1.1.0</span> <span class="release-date">3 Julio 2025</span></h3>
+          <ul>
+            <li><span class="tag new">NUEVO</span> Sistema de feedback obligatorio al enviar sugerencias (nombre + mensaje)</li>
+            <li><span class="tag improved">MEJORA</span> Estilo del menú lateral en dispositivos móviles</li>
+            <li><span class="tag fixed">FIX</span> Corrección de errores en el sistema de notificaciones</li>
+            <li><span class="tag internal">INTERNO</span> Mejora en la gestión de estado offline/online</li>
+          </ul>
+        </div>
+
+       
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v1.0.0</span> <span class="release-date">1 Julio 2025</span></h3>
+          <ul>
+            <li><span class="tag release">LANZAMIENTO</span> Publicación en GITHUB (<a href="https://sergiooomdz.github.io/FastRadio_LSSD/ " target="_blank">https://sergiooomdz.github.io/FastRadio_LSSD/ </a>)</li>
+            <li><span class="tag fixed">FIX</span> Problemas en el style.css</li>
+          </ul>
+        </div>
+
+     
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v0.9.5</span> <span class="release-date">2 Julio 2025</span></h3>
+          <ul>
+            <li><span class="tag new">NUEVO</span> Agregado al menú el apartado de sugerencias</li>
+            <li><span class="tag improved">MEJORA</span> Sistema al pulsar botones</li>
+            <li><span class="tag fixed">FIX</span> Sincronización con Discord</li>
+            <li><span class="tag internal">INTERNO</span> Codigo de la web ofuscado</li>
+          </ul>
+        </div>
+
+
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v0.9.0</span> <span class="release-date">30 Junio 2025</span></h3>
+          <ul>
+            <li><span class="tag new">NUEVO</span> Rediseño completo de la interfaz con mejoras UX</li>
+            <li><span class="tag new">NUEVO</span> Sistema de notificaciones avanzado</li>
+            <li><span class="tag improved">MEJORA</span> Tiempo de carga reducido en un 40%</li>
+            <li><span class="tag fixed">FIX</span> Error al copiar mensajes largos</li>
+            <li><span class="tag internal">INTERNO</span> Migración a Webpack 5</li>
+            <li><span class="tag improved">MEJORA</span> Optimización de rendimiento general</li>
+          </ul>
+        </div>
+
+
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v0.8.0</span> <span class="release-date">24 Junio 2025</span></h3>
+          <ul>
+            <li><span class="tag improved">MEJORA</span> Función de búsqueda más precisa</li>
+            <li><span class="tag fixed">FIX</span> Errores en el menú lateral</li>
+            <li><span class="tag improved">MEJORA</span> Documentación actualizada</li>
+          </ul>
+        </div>
+
+     
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v0.7.0</span> <span class="release-date">19 Junio</span></h3>
+          <ul>
+            <li><span class="tag new">NUEVO</span> Menú lateral con secciones</li>
+            <li><span class="tag new">NUEVO</span> 5 nuevas categorías de mensajes</li>
+            <li><span class="tag improved">MEJORA</span> Diseño responsive mejorado</li>
+            <li><span class="tag internal">INTERNO</span> Optimización de código base</li>
+          </ul>
+        </div>
+
+
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v0.6.0</span> <span class="release-date">12 Junio 2025</span></h3>
+          <ul>
+            <li><span class="tag new">NUEVO</span> Función de búsqueda integrada</li>
+            <li><span class="tag new">NUEVO</span> Sistema de copiado mejorado</li>
+            <li><span class="tag improved">MEJORA</span> Notificaciones más intuitivas</li>
+            <li><span class="tag fixed">FIX</span> Sincronización de reloj</li>
+          </ul>
+        </div>
+
+
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v0.5.0</span> <span class="release-date">8 Junio 2025</span></h3>
+          <ul>
+            <li><span class="tag security">SEGURIDAD</span> Primera actualización de parches</li>
+            <li><span class="tag improved">MEJORA</span> Validación de callsign</li>
+            <li><span class="tag fixed">FIX</span> Errores menores de interfaz</li>
+          </ul>
+        </div>
+
+        <!-- v1.0.0 -->
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v0.4.0</span> <span class="release-date">1 Junio 2025</span></h3>
+          <ul>
+            <li><span class="tag release">LANZAMIENTO</span> Versión inicial privada</li>
+            <li><span class="tag new">NUEVO</span> Sistema básico de radio</li>
+            <li><span class="tag new">NUEVO</span> 8 categorías de mensajes</li>
+            <li><span class="tag new">NUEVO</span> Personalización de callsign</li>
+            <li><span class="tag new">NUEVO</span> Reloj GTAHUB en tiempo real</li>
+          </ul>
+        </div>
+
+        <!-- v0.9.0 - Beta interna -->
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v0.3.0</span> <span class="release-date">25 Mayo 2025</span></h3>
+          <ul>
+            <li><span class="tag beta">BETA</span> Desarrollo interno de estructura principal</li>
+            <li><span class="tag new">NUEVO</span> Plantillas de mensajes básicos funcionales</li>
+            <li><span class="tag internal">INTERNO</span> Pruebas de integración con servidor local</li>
+          </ul>
+        </div>
+
+        <!-- v0.8.0 - Prototipo -->
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v0.2.0</span> <span class="release-date">10 Mayo 2025</span></h3>
+          <ul>
+            <li><span class="tag prototype">PROTOTIPO</span> Versión funcional básica compartida internamente</li>
+            <li><span class="tag new">NUEVO</span> Soporte inicial de múltiples navegadores</li>
+            <li><span class="tag improved">MEJORA</span> Compatibilidad móvil</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <h3><span class="version-badge">v0.1.0</span> <span class="release-date">5 Mayo 2025</span></h3>
+          <ul>
+            <li><span class="tag dev">DESARROLLO</span> Inicio del proyecto FastRadio LSSD</li>
+            <li><span class="tag new">NUEVO</span> Sistema de categorías implementado</li>
+            <li><span class="tag internal">INTERNO</span> Uso de localStorage para guardar datos</li>
+          </ul>
+        </div>
+        <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
+      </div>
+    </div>
+
+    <!-- Sección Aviso Legal -->
+    <div id="aviso" class="section">
+      <div class="section-header">
+        <h1>AVISO LEGAL</h1>
+      </div>
+      <div class="section-content legal-container">
+        <div class="legal-card">
+          <h3>📌 Uso autorizado:</h3>
+          <p>El acceso y utilización de esta aplicación está restringido únicamente a los agentes del departamento. Cualquier uso fuera de este contexto es considerado no autorizado.</p>
+
+          <h3>⚠️ Prohibida la redistribución:</h3>
+          <p>Este sitio web, su código fuente y sus contenidos son propiedad intelectual del desarrollador. Queda prohibida su copia, modificación o redistribución sin consentimiento explícito.</p>
+
+          <h3>⛔ Uso malintencionado:</h3>
+          <p>El uso indebido, malicioso o con fines de ingeniería inversa de esta herramienta puede resultar en acciones legales, administrativas o técnicas en tu contra.</p>
+
+          <h3>🌐 No afiliado:</h3>
+          <p>Este sitio NO tiene relación oficial ni patrocinio directo con <strong>GAMERSHUB.GG</strong> u otros servidores derivados ni con R*ckstar Games. Es una herramienta independiente creada por y para usuarios de roleplay.</p>
+        </div>
+        <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
+      </div>
+    </div>
+
+    <div class="realtime-clock" id="clock">HORA GTAHUB: --:--:--</div>
   </div>
 
-  <!-- Secciones del Menú -->
-<div id="sections-container">
-
-<!-- Sección Feedback -->
-<div id="feedback" class="section">
-  <div class="section-header">
-    <h1>💬 DEJA TU SUGERENCIA</h1>
-  </div>
-  <div class="section-content feedback-container">
-    <p>¿Tienes una idea nueva o quieres reportar un error? ¡Escríbela aquí!</p>
-    <label for="feedback-callsign"><strong>NOMBRE DE USUARIO:</strong></label>
-    <input type="text" id="feedback-callsign" placeholder="Ejemplo: Sergio" maxlength="35" oninput="validateCallsignInput(this.value)" />
-
-    <label for="feedback-text"><strong>MENSAJE:</strong></label>
-    <textarea id="feedback-text" rows="6" placeholder="Escribe tu sugerencia o reporte..."></textarea>
-
-    <button onclick="submitFeedback()" class="back-btn">📤 Enviar sugerencia</button>
-  </div>
-  <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
-</div>
-
-<!-- Sección Información -->
-<div id="info" class="section">
-  <div class="section-header">
-    <h1>INFORMACIÓN</h1>
-  </div>
-  <div class="section-content info-container">
-    <div class="info-card">
-      <h2>¿Qué es FAST-RADIO LSSD?:</h2>
-      <p>FAST-RADIO es una herramienta diseñada para agilizar las comunicaciones escritas de LEO dentro de GTAHUB.GG, en este caso concreto de LSSD.</p>
-
-      <h3>🎯 Objetivo:</h3>
-      <p>Permitir a los jugadores enviar mensajes rápidos y estandarizados mediante el uso de plantillas predefinidas, acelerando la comunicación durante situaciones críticas o rutinarias.</p>
-
-      <h3>⚙️ Funcionalidades principales:</h3>
-      <ul class="features-list">
-        <li><i class="fas fa-check-circle"></i> Personalización con tu <strong>CALLSIGN</strong></li>
-        <li><i class="fas fa-check-circle"></i> Mensajes organizados por categorías</li>
-        <li><i class="fas fa-check-circle"></i> Búsqueda rápida por palabras clave</li>
-        <li><i class="fas fa-check-circle"></i> Copiado automático al portapapeles</li>
-        <li><i class="fas fa-check-circle"></i> Hora HUB actualizada en tiempo real (UTC+2)</li>
-      </ul>
-
-      <h3>💡 ¿Cómo usarla?:</h3>
-      <ol class="usage-steps">
-        <li>Escribe tu CALLSIGN arriba.</li>
-        <li>Usa la barra de búsqueda o navega por categorías.</li>
-        <li>Haz clic en el botón "Copiar" para pegar directamente en Discord o el chat del juego.</li>
-      </ol>
-    </div>
-
-    <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
-  </div>
-</div>
-
-<!-- Sección Contacto -->
-<div id="contacto" class="section">
-  <div class="section-header">
-    <h1>CONTACTO</h1>
-  </div>
-  <div class="section-content contact-container">
-    <div class="contact-card">
-      <h2>¿Tienes dudas o sugerencias?</h2>
-      <p>Estoy aquí para ayudarte. Puedes contactarme por cualquiera de los siguientes medios:</p>
-
-      <ul class="contact-list">
-        <li><i class="fab fa-discord"></i> <strong>Discord:</strong> <a href="https://discordapp.com/users/sergioomdz " target="_blank">sergioomdz</a></li>
-        <li><i class="fas fa-envelope"></i> <strong>Email:</strong> <a href="mailto:sergioomdz@gmail.com" target="_blank">sergioomdz@gmail.com</a></li>
-        <li><i class="fab fa-github"></i> <strong>GitHub:</strong> <a href="https://github.com/sergioomdz " target="_blank">Ver mis proyectos</a></li>
-        <li><i class="fas fa-briefcase"></i> <strong>Freelance:</strong> Disponible para nuevos proyectos</li>
-      </ul>
-
-      <p class="thank-you-text"><strong>Gracias por usar fast radio ❤️</strong></p>
-    </div>
-
-    <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
-  </div>
-</div>
-
-<!-- Sección Changelog -->
-<div id="changelog" class="section">
-  <div class="section-header">
-    <h1>HISTORIAL DE CAMBIOS</h1>
-  </div>
-  <div class="section-content changelog-container">
-
-   
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v1.1.0</span> <span class="release-date">3 Julio 2025</span></h3>
-      <ul>
-        <li><span class="tag new">NUEVO</span> Sistema de feedback obligatorio al enviar sugerencias (nombre + mensaje)</li>
-        <li><span class="tag improved">MEJORA</span> Estilo del menú lateral en dispositivos móviles</li>
-        <li><span class="tag fixed">FIX</span> Corrección de errores en el sistema de notificaciones</li>
-        <li><span class="tag internal">INTERNO</span> Mejora en la gestión de estado offline/online</li>
-      </ul>
-    </div>
-
-   
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v1.0.0</span> <span class="release-date">1 Julio 2025</span></h3>
-      <ul>
-        <li><span class="tag release">LANZAMIENTO</span> Publicación en GITHUB (<a href="https://sergiooomdz.github.io/FastRadio_LSSD/ " target="_blank">https://sergiooomdz.github.io/FastRadio_LSSD/ </a>)</li>
-        <li><span class="tag fixed">FIX</span> Problemas en el style.css</li>
-      </ul>
-    </div>
-
- 
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v0.9.5</span> <span class="release-date">2 Julio 2025</span></h3>
-      <ul>
-        <li><span class="tag new">NUEVO</span> Agregado al menú el apartado de sugerencias</li>
-        <li><span class="tag improved">MEJORA</span> Sistema al pulsar botones</li>
-        <li><span class="tag fixed">FIX</span> Sincronización con Discord</li>
-        <li><span class="tag internal">INTERNO</span> Codigo de la web ofuscado</li>
-      </ul>
-    </div>
-
-
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v0.9.0</span> <span class="release-date">30 Junio 2025</span></h3>
-      <ul>
-        <li><span class="tag new">NUEVO</span> Rediseño completo de la interfaz con mejoras UX</li>
-        <li><span class="tag new">NUEVO</span> Sistema de notificaciones avanzado</li>
-        <li><span class="tag improved">MEJORA</span> Tiempo de carga reducido en un 40%</li>
-        <li><span class="tag fixed">FIX</span> Error al copiar mensajes largos</li>
-        <li><span class="tag internal">INTERNO</span> Migración a Webpack 5</li>
-        <li><span class="tag improved">MEJORA</span> Optimización de rendimiento general</li>
-      </ul>
-    </div>
-
-
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v0.8.0</span> <span class="release-date">24 Junio 2025</span></h3>
-      <ul>
-        <li><span class="tag improved">MEJORA</span> Función de búsqueda más precisa</li>
-        <li><span class="tag fixed">FIX</span> Errores en el menú lateral</li>
-        <li><span class="tag improved">MEJORA</span> Documentación actualizada</li>
-      </ul>
-    </div>
-
- 
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v0.7.0</span> <span class="release-date">19 Junio</span></h3>
-      <ul>
-        <li><span class="tag new">NUEVO</span> Menú lateral con secciones</li>
-        <li><span class="tag new">NUEVO</span> 5 nuevas categorías de mensajes</li>
-        <li><span class="tag improved">MEJORA</span> Diseño responsive mejorado</li>
-        <li><span class="tag internal">INTERNO</span> Optimización de código base</li>
-      </ul>
-    </div>
-
-
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v0.6.0</span> <span class="release-date">12 Junio 2025</span></h3>
-      <ul>
-        <li><span class="tag new">NUEVO</span> Función de búsqueda integrada</li>
-        <li><span class="tag new">NUEVO</span> Sistema de copiado mejorado</li>
-        <li><span class="tag improved">MEJORA</span> Notificaciones más intuitivas</li>
-        <li><span class="tag fixed">FIX</span> Sincronización de reloj</li>
-      </ul>
-    </div>
-
-
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v0.5.0</span> <span class="release-date">8 Junio 2025</span></h3>
-      <ul>
-        <li><span class="tag security">SEGURIDAD</span> Primera actualización de parches</li>
-        <li><span class="tag improved">MEJORA</span> Validación de callsign</li>
-        <li><span class="tag fixed">FIX</span> Errores menores de interfaz</li>
-      </ul>
-    </div>
-
-    <!-- v1.0.0 -->
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v0.4.0</span> <span class="release-date">1 Junio 2025</span></h3>
-      <ul>
-        <li><span class="tag release">LANZAMIENTO</span> Versión inicial privada</li>
-        <li><span class="tag new">NUEVO</span> Sistema básico de radio</li>
-        <li><span class="tag new">NUEVO</span> 8 categorías de mensajes</li>
-        <li><span class="tag new">NUEVO</span> Personalización de callsign</li>
-        <li><span class="tag new">NUEVO</span> Reloj GTAHUB en tiempo real</li>
-      </ul>
-    </div>
-
-    <!-- v0.9.0 - Beta interna -->
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v0.3.0</span> <span class="release-date">25 Mayo 2025</span></h3>
-      <ul>
-        <li><span class="tag beta">BETA</span> Desarrollo interno de estructura principal</li>
-        <li><span class="tag new">NUEVO</span> Plantillas de mensajes básicos funcionales</li>
-        <li><span class="tag internal">INTERNO</span> Pruebas de integración con servidor local</li>
-      </ul>
-    </div>
-
-    <!-- v0.8.0 - Prototipo -->
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v0.2.0</span> <span class="release-date">10 Mayo 2025</span></h3>
-      <ul>
-        <li><span class="tag prototype">PROTOTIPO</span> Versión funcional básica compartida internamente</li>
-        <li><span class="tag new">NUEVO</span> Soporte inicial de múltiples navegadores</li>
-        <li><span class="tag improved">MEJORA</span> Compatibilidad móvil</li>
-      </ul>
-    </div>
-
-    <div class="changelog-entry">
-      <h3><span class="version-badge">v0.1.0</span> <span class="release-date">5 Mayo 2025</span></h3>
-      <ul>
-        <li><span class="tag dev">DESARROLLO</span> Inicio del proyecto FastRadio LSSD</li>
-        <li><span class="tag new">NUEVO</span> Sistema de categorías implementado</li>
-        <li><span class="tag internal">INTERNO</span> Uso de localStorage para guardar datos</li>
-      </ul>
-    </div>
-    <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
-  </div>
-</div>
-
-<!-- Sección Aviso Legal -->
-<div id="aviso" class="section">
-  <div class="section-header">
-    <h1>AVISO LEGAL</h1>
-  </div>
-  <div class="section-content legal-container">
-    <div class="legal-card">
-      <h3>📌 Uso autorizado:</h3>
-      <p>El acceso y utilización de esta aplicación está restringido únicamente a los agentes del departamento. Cualquier uso fuera de este contexto es considerado no autorizado.</p>
-
-      <h3>⚠️ Prohibida la redistribución:</h3>
-      <p>Este sitio web, su código fuente y sus contenidos son propiedad intelectual del desarrollador. Queda prohibida su copia, modificación o redistribución sin consentimiento explícito.</p>
-
-      <h3>⛔ Uso malintencionado:</h3>
-      <p>El uso indebido, malicioso o con fines de ingeniería inversa de esta herramienta puede resultar en acciones legales, administrativas o técnicas en tu contra.</p>
-
-      <h3>🌐 No afiliado:</h3>
-      <p>Este sitio NO tiene relación oficial ni patrocinio directo con <strong>GAMERSHUB.GG</strong> u otros servidores derivados ni con R*ckstar Games. Es una herramienta independiente creada por y para usuarios de roleplay.</p>
-    </div>
-    <button onclick="backToMain()" class="back-btn">← Volver atrás</button>
-  </div>
-</div>
-
-  <div class="realtime-clock" id="clock">HORA GTAHUB: --:--:--</div>
   <script>
+    // 1. PRIMERO VERIFICAMOS LA WHITELIST DE IPs
+    const WHITELISTED_IPS = [
+      // Agrega aquí las IPs autorizadas (reemplaza con las IPs reales)
+      "89.44.60.199", // Ejemplo
+      "192.168.1.1"      // Ejemplo
+    ];
+
+    // Función para verificar el acceso por IP
+    async function checkIPAccess() {
+      try {
+        // Obtener la IP del cliente
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        const clientIp = ipData.ip;
+        
+        // Mostrar la IP en el mensaje de denegado
+        document.getElementById('client-ip').textContent = clientIp;
+        
+        // Verificar si la IP está en la whitelist
+        if (!WHITELISTED_IPS.includes(clientIp)) {
+          // Mostrar mensaje de acceso denegado y ocultar contenido
+          document.getElementById('access-denied-overlay').style.display = 'flex';
+          document.getElementById('original-content').style.display = 'none';
+          return false;
+        }
+        
+        return true;
+      } catch (error) {
+        console.error("Error verificando IP:", error);
+        // En caso de error, por seguridad denegamos el acceso
+        document.getElementById('access-denied-overlay').style.display = 'flex';
+        document.getElementById('original-content').style.display = 'none';
+        return false;
+      }
+    }
+
+    // 2. LUEGO EL RESTO DE TU CÓDIGO ORIGINAL (sin cambios)
     // Bloquear clic derecho y mostrar notificación
     document.addEventListener('contextmenu', function (e) {
       e.preventDefault();
@@ -734,20 +781,26 @@ async function sendToDiscord(payload) {
       document.querySelectorAll('[data-scroll]').forEach(el => observer.observe(el));
     }
 
-    // Inicialización
-    window.addEventListener('load', () => {
-      // Ocultar secciones al inicio
-      elements.sectionsContainer.style.display = 'none';
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    // Inicialización modificada para verificar IP primero
+    window.addEventListener('load', async () => {
+      // Verificar acceso por IP
+      const hasAccess = await checkIPAccess();
       
-      // Cargar contenido principal
-      loadMessages();
-      updateClock();
-      setInterval(updateClock, 1000);
-      initScrollObserver();
-      const savedCallsign = localStorage.getItem('callsign');
-      if (savedCallsign) {
-        elements.activeCallsign.textContent = `👤 CALLSIGN ACTUAL: ${savedCallsign}`;
+      if (hasAccess) {
+        // Solo inicializar la aplicación si tiene acceso
+        // Ocultar secciones al inicio
+        elements.sectionsContainer.style.display = 'none';
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        
+        // Cargar contenido principal
+        loadMessages();
+        updateClock();
+        setInterval(updateClock, 1000);
+        initScrollObserver();
+        const savedCallsign = localStorage.getItem('callsign');
+        if (savedCallsign) {
+          elements.activeCallsign.textContent = `👤 CALLSIGN ACTUAL: ${savedCallsign}`;
+        }
       }
     });
 
@@ -760,6 +813,7 @@ async function sendToDiscord(payload) {
       elements.offlineNotification.classList.remove('show');
       showNotification("✅ Vuelves a estar en línea");
     });
+    
   </script>
 </body>
 </html>
