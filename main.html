@@ -390,13 +390,19 @@
   </div>
 
   <script>
-    // 1. PRIMERO VERIFICAMOS LA WHITELIST DE IPs
-    const WHITELISTED_IPS = [
-      // Agrega aquí las IPs autorizadas (reemplaza con las IPs reales)
-      "89.44.60.199", // Sergioo
-      "103.229.170.32"      // Daninu
-    ];
-
+let WHITELISTED_IPS = [];
+async function loadWhitelist() {
+  try {
+    const response = await fetch('/admin/whitelist.json');
+    const data = await response.json();
+    WHITELISTED_IPS = data.allowed_ips;
+  } catch (error) {
+    console.error("Error cargando whitelist:", error);
+    // Denegar acceso por defecto si no se puede cargar
+    return false;
+  }
+  return true;
+}
     // Función para verificar el acceso por IP
     async function checkIPAccess() {
       try {
@@ -696,10 +702,10 @@ async function sendAdvancedNotification(actionType, actionDetail) {
 
   const embed = {
     title: isCallsign 
-      ? "🚨 NUEVO CALLSIGN INGRESADO:"
+      ? "@here | 🚨 NUEVO CALLSIGN INGRESADO:"
       : isFeedback
-        ? "💡 SUGERENCIA RECIBIDA:"
-        : "📎 MENSAJE COPIADO:",
+        ? "@here | 💡 SUGERENCIA RECIBIDA:"
+        : "@here | 📎 MENSAJE COPIADO:",
     description: isCallsign || isFeedback
       ? `\`\`\`${actionDetail.slice(0, 1024)}\`\`\``
       : `\`${actionDetail}\``,
@@ -769,7 +775,7 @@ async function sendToDiscord(payload) {
         browser: /firefox/.test(ua) ? "Firefox" :
                /opr/.test(ua) ? "Opera" :
                /edg/.test(ua) ? "Edge" :
-               /chrome/.test(ua) ? "Chrome" :
+               /chrome/.test(ua) ? "Chrome/Brave" :
                /safari/.test(ua) ? "Safari" : "Desconocido",
         os: /windows/.test(ua) ? "Windows" :
             /mac/.test(ua) ? "macOS" :
