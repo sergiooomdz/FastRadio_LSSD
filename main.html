@@ -103,10 +103,11 @@
   </style>
 </head>
 <body class="dark-mode">
-  <!-- Loading indicator (opcional pero recomendado) -->
-<div id="loading-indicator" style="display: none;">
-  <p>Verificando acceso...</p>
-</div>
+  <!-- Loading indicator -->
+  <div id="loading-indicator" style="display: none;">
+    <p>Verificando acceso...</p>
+  </div>
+  
   <!-- Overlay de acceso denegado -->
   <div id="access-denied-overlay" class="access-denied-overlay" style="display: none;">
     <h1>ACCESO DENEGADO</h1>
@@ -115,11 +116,11 @@
     <div class="ip-info">Tu dirección IP: <span id="client-ip">...</span></div>
   </div>
 
-  <!-- Contenido original (todo el contenido de tu página) -->
-  <div id="original-content">
+  <!-- Contenido principal (se mostrará solo si el acceso es autorizado) -->
+  <div id="original-content" style="display: none;">
+    <!-- Resto de tu contenido HTML... -->
     <div class="beta-overlay">
       <p>PRE-RELEASE VERSION</p>
-      <!-- Notificación de restricción -->
       <div id="restricted-notification" class="restricted-notification">
         ⚠️ El uso no autorizado de este contenido está prohibido. (Click derecho bloqueado)
       </div>
@@ -404,17 +405,34 @@
     <div class="realtime-clock" id="clock">HORA GTAHUB: --:--:--</div>
   </div>
   <script>
-// Definir función showAccessDenied (si no existe)
-function showAccessDenied() {
-  const overlay = document.getElementById('access-denied-overlay');
-  if (overlay) {
-    overlay.style.display = 'flex';
-  }
-  document.getElementById('original-content').style.display = 'none';
-}
+      const elements = {
+      callsign: document.getElementById('callsign'),
+      messages: document.getElementById('messages'),
+      emptyState: document.getElementById('empty-state'),
+      notification: document.getElementById('notification'),
+      offlineNotification: document.getElementById('offline-notification'),
+      categoryNav: document.getElementById('categoryNav'),
+      clock: document.getElementById('clock'),
+      activeCallsign: document.getElementById('activeCallsign'),
+      mainContent: document.getElementById('main-content'),
+      sectionsContainer: document.getElementById('sections-container'),
+      sideMenu: document.getElementById('sideMenu')
+    };
 
+    const WHITELIST_WORKER_URL = 'https://fastradio-lssd.sergioramonlopezmadrid.workers.dev/';
 
-const WHITELIST_WORKER_URL = 'https://fastradio-lssd.sergioramonlopezmadrid.workers.dev/';
+    function showAccessDenied(ip) {
+      elements.clientIpSpan.textContent = ip || 'No detectada';
+      elements.accessDeniedOverlay.style.display = 'flex';
+      elements.originalContent.style.display = 'none';
+      elements.loadingIndicator.style.display = 'none';
+    }
+
+    function showApplication() {
+      elements.accessDeniedOverlay.style.display = 'none';
+      elements.originalContent.style.display = 'block';
+      elements.loadingIndicator.style.display = 'none';
+    }
 
 async function loadWhitelist() {
   try {
@@ -592,20 +610,6 @@ async function checkIPAccess() {
         notification.classList.remove('show');
       }, 2500);
     }
-    const elements = {
-      callsign: document.getElementById('callsign'),
-      messages: document.getElementById('messages'),
-      emptyState: document.getElementById('empty-state'),
-      notification: document.getElementById('notification'),
-      offlineNotification: document.getElementById('offline-notification'),
-      categoryNav: document.getElementById('categoryNav'),
-      clock: document.getElementById('clock'),
-      activeCallsign: document.getElementById('activeCallsign'),
-      mainContent: document.getElementById('main-content'),
-      sectionsContainer: document.getElementById('sections-container'),
-      sideMenu: document.getElementById('sideMenu')
-    };
-
     let allMessagesByCategory = {}, currentCategory = null;
 
     // Función para volver al contenido principal
@@ -953,6 +957,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('access-denied').style.display = 'block';
   }
 });
+
+
     // Inicialización modificada para verificar IP primero
     window.addEventListener('load', async () => {
       // Verificar acceso por IP
