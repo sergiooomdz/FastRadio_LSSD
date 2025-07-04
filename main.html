@@ -56,18 +56,7 @@
       opacity: 1 !important;
       transform: translateY(0) !important;
     }
-    /* Estilos para el loading indicator */
-    #loading-indicator {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 20px;
-      border-radius: 5px;
-      z-index: 999;
-    }
+
     /* Estilos para el mensaje de acceso denegado */
     .access-denied-overlay {
       position: fixed;
@@ -103,9 +92,20 @@
   </style>
 </head>
 <body class="dark-mode">
-  <!-- Loading indicator -->
-  <div id="loading-indicator" style="display: none;">
-    <p>Verificando acceso...</p>
+  <div id="loading-indicator">
+    <div class="particles" id="loading-particles"></div>
+    <div class="loading-content">
+      <div class="loading-spinner">
+        <div class="spinner-circle"></div>
+        <div class="spinner-circle"></div>
+        <div class="spinner-circle"></div>
+      </div>
+      <div class="loading-text">Verificando acceso</div>
+      <div class="loading-subtext">Por favor, espera un momento</div>
+      <div class="loading-progress">
+        <div class="progress-bar" id="loading-progress-bar"></div>
+      </div>
+    </div>
   </div>
   
   <!-- Overlay de acceso denegado -->
@@ -430,7 +430,55 @@
 
     // URL del worker con la whitelist
     const WHITELIST_WORKER_URL = 'https://fastradio-lssd.sergioramonlopezmadrid.workers.dev/';
+  // Función para mostrar el loading con animación
+  function showLoading() {
+    const loader = document.getElementById('loading-indicator');
+    loader.classList.add('active');
+    
+    // Crear partículas (opcional)
+    createParticles();
+    
+    // Animación de progreso simulada
+    animateProgress();
+  }
 
+  // Función para ocultar el loading
+  function hideLoading() {
+    const loader = document.getElementById('loading-indicator');
+    loader.classList.remove('active');
+  }
+
+  // Animación de la barra de progreso
+  function animateProgress() {
+    const progressBar = document.getElementById('loading-progress-bar');
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 10;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+      }
+      progressBar.style.width = `${progress}%`;
+    }, 300);
+  }
+
+  // Crear partículas decorativas (opcional)
+  function createParticles() {
+    const container = document.getElementById('loading-particles');
+    container.innerHTML = '';
+    
+    for (let i = 0; i < 30; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.top = `${Math.random() * 100}%`;
+      particle.style.animationDelay = `${Math.random() * 15}s`;
+      particle.style.opacity = Math.random() * 0.5;
+      particle.style.width = `${Math.random() * 3 + 1}px`;
+      particle.style.height = particle.style.width;
+      container.appendChild(particle);
+    }
+  }
     // Función para mostrar/ocultar elementos
     function showAccessDenied(ip) {
       if (elements.clientIpSpan) elements.clientIpSpan.textContent = ip || 'No detectada';
