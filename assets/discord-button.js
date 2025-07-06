@@ -1,6 +1,6 @@
 // Crea el botón de Discord
 const discordBtn = document.createElement('a');
-discordBtn.href = "https://discord.gg/erV2MnJNza";
+discordBtn.href = "https://discord.gg/abRpRdvYuX";
 discordBtn.target = "_blank";
 discordBtn.rel = "noopener noreferrer";
 discordBtn.className = "discord-float";
