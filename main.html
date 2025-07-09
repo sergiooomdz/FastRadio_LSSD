@@ -155,7 +155,7 @@
         <!-- Contenedor Principal -->
         <div id="main-content">
             <header>
-                <h1>FAST-RADIO | VERSIÓN LSSD | GTAHUB.GG</h1>
+                <h1>FAST RADIO | VERSIÓN LSSD | GTAHUB.GG</h1>
                 <div id="activeCallsign" class="active-callsign">👤 <strong>CALLSIGN ACTUAL: N/A</strong></div>
             </header>
 
@@ -200,8 +200,8 @@
                 </div>
                 <div class="section-content info-container">
                     <div class="info-card">
-                        <h2>¿Qué es FAST-RADIO LSSD?:</h2>
-                        <p>FAST-RADIO es una herramienta diseñada para agilizar las comunicaciones escritas de LEO dentro de GTAHUB.GG, en este caso concreto de LSSD.</p>
+                        <h2>¿Qué es Fast Radio LSSD?:</h2>
+                        <p>Fast Radio es una herramienta diseñada para agilizar las comunicaciones escritas de LEO dentro de GTAHUB.GG, en este caso concreto de LSSD.</p>
 
                         <h3>🎯 Objetivo:</h3>
                         <p>Permitir a los jugadores enviar mensajes rápidos y estandarizados mediante el uso de plantillas predefinidas, acelerando la comunicación durante situaciones críticas o rutinarias.</p>
@@ -432,6 +432,25 @@
               restrictedNotification: document.getElementById('restricted-notification')
             };
         
+            const backgrounds = [
+              'imagenes/LSSD1.png',
+              'imagenes/LSSD2.png',
+              'imagenes/LSSD3.png',
+              'imagenes/LSSD4.png',
+              'imagenes/LSSD5.png',
+              'imagenes/LSSD6.png'
+            ];
+
+            let currentIndex = 0;
+
+            function cambiarFondo() {
+              document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
+              currentIndex = (currentIndex + 1) % backgrounds.length;
+            }
+
+            // Cambia cada 60 segundos
+            setInterval(cambiarFondo, 60000);
+            window.addEventListener('DOMContentLoaded', cambiarFondo);
             let allMessagesByCategory = {}, currentCategory = null;
         
             // URL del worker con la whitelist
